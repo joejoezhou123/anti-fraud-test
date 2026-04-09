@@ -186,15 +186,16 @@
         .start-section {
             text-align: center;
             padding: 40px 30px;
+            display: none;
         }
 
         .start-section.active {
-            display: block;
+            display: block !important;
             animation: fadeInUp 0.5s ease;
         }
 
         .start-section.hidden {
-            display: none;
+            display: none !important;
         }
 
         .start-badge {
@@ -962,7 +963,17 @@
             document.getElementById('quizHeader').style.display = 'none';
             document.getElementById('progressBar').style.display = 'none';
             document.getElementById('questionContainer').innerHTML = '';
-            document.getElementById('resultSection').classList.add('active');
+            
+            // 隐藏开始页
+            var startSec = document.getElementById('startSection');
+            startSec.classList.remove('active');
+            startSec.classList.add('hidden');
+            startSec.style.display = 'none';
+
+            // 显示结果页
+            var resultSec = document.getElementById('resultSection');
+            resultSec.classList.add('active');
+            resultSec.style.display = 'block';
 
             document.getElementById('resultRank').textContent = info.rank;
             document.getElementById('resultTitle').textContent = info.title;
@@ -1003,18 +1014,29 @@
 
         // ===== 重新测试 =====
         function retest() {
+            // 关闭弹窗
             document.getElementById('resultModal').classList.remove('show');
+            
+            // 重置数据
             currentQuestion = 0;
             score = 0;
             userAnswers = [];
             trapPassed = false;
 
+            // 隐藏结果页
             document.getElementById('resultSection').classList.remove('active');
+            document.getElementById('resultSection').style.display = 'none';
+
+            // 隐藏答题区域
             document.getElementById('quizHeader').style.display = 'none';
             document.getElementById('progressBar').style.display = 'none';
             document.getElementById('questionContainer').innerHTML = '';
-            document.getElementById('startSection').classList.remove('hidden');
-            document.getElementById('startSection').classList.add('active');
+
+            // 显示开始页（确保显示）
+            var startSec = document.getElementById('startSection');
+            startSec.classList.remove('hidden');
+            startSec.classList.add('active');
+            startSec.style.display = 'block';
         }
 
         // ===== 等级图案数据 =====
@@ -1066,8 +1088,11 @@
 
         // ===== 开始测试 =====
         function startTest() {
-            document.getElementById('startSection').classList.remove('active');
-            document.getElementById('startSection').classList.add('hidden');
+            var startSec = document.getElementById('startSection');
+            startSec.classList.remove('active');
+            startSec.classList.add('hidden');
+            startSec.style.display = 'none';
+            
             document.getElementById('quizHeader').style.display = '';
             document.getElementById('progressBar').style.display = 'flex';
             
