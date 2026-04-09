@@ -1010,8 +1010,11 @@
             trapPassed = false;
 
             document.getElementById('resultSection').classList.remove('active');
+            document.getElementById('quizHeader').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('questionContainer').innerHTML = '';
+            document.getElementById('startSection').classList.remove('hidden');
             document.getElementById('startSection').classList.add('active');
-            document.getElementById('quizHeader').style.display = '';
         }
 
         // ===== 等级图案数据 =====
