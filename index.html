@@ -589,14 +589,106 @@
             color: #2ecc71;
         }
 
-        .poster-qrcode-area {
-            background: #fff;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+        /* 等级图案区域 */
+        .poster-badge-area {
+            margin-bottom: 20px;
+            padding: 20px 10px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .poster-qrcode-hint {
+        .poster-badge-area.bronze {
+            background: linear-gradient(145deg, rgba(205,127,50,0.2), rgba(139,90,43,0.1));
+            border: 2px solid rgba(205,127,50,0.5);
+        }
+
+        .poster-badge-area.silver {
+            background: linear-gradient(145deg, rgba(192,192,192,0.2), rgba(150,150,150,0.1));
+            border: 2px solid rgba(192,192,192,0.5);
+        }
+
+        .poster-badge-area.gold {
+            background: linear-gradient(145deg, rgba(255,215,0,0.25), rgba(218,165,32,0.12));
+            border: 2px solid rgba(255,215,0,0.6);
+            box-shadow: 0 0 30px rgba(255,215,0,0.15);
+        }
+
+        .poster-badge-area.king {
+            background: linear-gradient(145deg, rgba(255,107,107,0.15), rgba(72,219,251,0.15), rgba(254,202,87,0.15));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .poster-badge-area.king::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #a29bfe, #ff6b6b);
+            background-size: 300% 300%;
+            animation: borderGlow 3s ease infinite;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            -webkit-mask-composite: xor;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .badge-icon {
+            font-size: 80px;
+            line-height: 1;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+        }
+
+        .poster-badge-area.bronze .badge-icon { animation: badgeFloat 2.5s ease-in-out infinite; }
+        .poster-badge-area.silver .badge-icon { animation: badgeFloat 2.8s ease-in-out infinite; }
+        .poster-badge-area.gold .badge-icon { animation: badgeFloat 2.2s ease-in-out infinite; }
+        .poster-badge-area.king .badge-icon { 
+            animation: badgeFloatKing 1.8s ease-in-out infinite; 
+            filter: drop-shadow(0 4px 20px rgba(255,215,0,0.5));
+        }
+
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes badgeFloatKing {
+            0%, 100% { transform: translateY(0) scale(1); }
+            33% { transform: translateY(-10px) scale(1.08); }
+            66% { transform: translateY(-3px) scale(1.03); }
+        }
+
+        .badge-label {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .poster-badge-area.bronze .badge-label { color: #cd7f32; }
+        .poster-badge-area.silver .badge-label { color: #c0c0c0; }
+        .poster-badge-area.gold .badge-label { color: #ffd700; text-shadow: 0 0 16px rgba(255,215,0,0.5); }
+        .poster-badge-area.king .badge-label {
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .badge-desc {
+            font-size: 13px;
+            color: #8899aa;
+            margin-top: 6px;
+        }
+
+        .poster-share-hint {
             font-size: 13px;
             color: #a0aec0;
         }
@@ -740,10 +832,12 @@
             <div class="poster-trap-result" id="posterTrapResult">
                 隐私陷阱：✅ 成功识破
             </div>
-            <div class="poster-qrcode-area">
-                <canvas id="qrCanvas" width="200" height="200"></canvas>
+            <div class="poster-badge-area" id="posterBadgeArea">
+                <div class="badge-icon" id="posterBadgeIcon">🥇</div>
+                <div class="badge-label" id="posterBadgeLabel">黄金</div>
+                <div class="badge-desc" id="posterBadgeDesc">反诈意识超越大多数人</div>
             </div>
-            <div class="poster-qrcode-hint">长按保存图片，分享给好友一起测</div>
+            <div class="poster-share-hint">长按保存图片，分享给好友一起测</div>
             <div class="poster-footer-logo">—— 大V反诈 ——</div>
             <button class="close-poster-btn" onclick="closePoster()">关闭</button>
         </div>
@@ -920,6 +1014,14 @@
             document.getElementById('quizHeader').style.display = '';
         }
 
+        // ===== 等级图案数据 =====
+        const badgeData = {
+            bronze: { icon: '🛡️', label: '青铜', desc: '反诈意识需要加强' },
+            silver: { icon: '⚔️', label: '白银', desc: '具备基本反诈能力' },
+            gold: { icon: '🏆', label: '黄金', desc: '反诈意识超越大多数人' },
+            king: { icon: '👑', label: '王者', desc: '反诈大神，骗子绕道走！' }
+        };
+
         // ===== 显示海报 =====
         function showPoster() {
             document.getElementById('resultModal').classList.remove('show');
@@ -927,6 +1029,20 @@
             const info = rankInfo[score];
             document.getElementById('posterScoreResult').textContent = `${score}/5`;
             document.getElementById('posterLevelResult').textContent = info.title;
+
+            // 设置等级图案
+            let badgeKey = info.class;
+            if (score === 0) badgeKey = 'bronze';
+            else if (score <= 2) badgeKey = 'silver';
+            else if (score <= 4) badgeKey = 'gold';
+            else badgeKey = 'king';
+
+            const badge = badgeData[badgeKey];
+            const badgeArea = document.getElementById('posterBadgeArea');
+            badgeArea.className = `poster-badge-area ${badgeKey}`;
+            document.getElementById('posterBadgeIcon').textContent = badge.icon;
+            document.getElementById('posterBadgeLabel').textContent = badge.label;
+            document.getElementById('posterBadgeDesc').textContent = badge.desc;
 
             const trapEl = document.getElementById('posterTrapResult');
             if (trapPassed) {
@@ -937,76 +1053,7 @@
                 trapEl.innerHTML = '🔴 隐私陷阱：未识破 ✗<br>需加强个人信息保护意识';
             }
 
-            // 绘制二维码（模拟）
-            drawQRCode();
-
             document.getElementById('posterOverlay').classList.add('show');
-        }
-
-        // ===== 简易二维码绘制 =====
-        function drawQRCode() {
-            const canvas = document.getElementById('qrCanvas');
-            const ctx = canvas.getContext('2d');
-            const size = 200;
-            const cellSize = 8;
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, size, size);
-
-            ctx.fillStyle = '#000000';
-
-            // 使用简单图案模拟二维码外观
-            const pattern = generateQRPattern();
-            for (let y = 0; y < 21; y++) {
-                for (let x = 0; x < 21; x++) {
-                    if (pattern[y][x]) {
-                        ctx.fillRect(4 + x * cellSize, 4 + y * cellSize, cellSize - 1, cellSize - 1);
-                    }
-                }
-            }
-
-            // 中心文字
-            ctx.fillStyle = '#e74c3c';
-            ctx.font = 'bold 20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('扫我', size/2, size/2 + 7);
-        }
-
-        function generateQRPattern() {
-            // 生成一个类似二维码的伪随机图案
-            const p = Array(21).fill(null).map(() => Array(21).fill(false));
-
-            // 左上角定位图案
-            const drawFinder = (ox, oy) => {
-                for(let y=-1;y<=7;y++) for(let x=-1;x<=7;x++) {
-                    const inOuter = x>=0&&x<=7&&y>=0&&y<=7;
-                    const inInner = x>=1&&x<=5&&y>=1&&y<=5;
-                    const inCore = x>=2&&x<=4&&y>=2&&y<=4;
-                    if(inOuter && !inInner) p[oy+y][ox+x] = true;
-                    else if(inInner && !inCore) p[oy+y][ox+x] = true;
-                }
-            };
-
-            drawFinder(0, 0);
-            drawFinder(13, 0);
-            drawFinder(0, 13);
-
-            // 添加数据区域的伪随机填充
-            let seed = 42;
-            const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed % 3 === 0; };
-            for (let y = 0; y < 21; y++) {
-                for (let x = 0; x < 21; x++) {
-                    if (!p[y][x] && !(x >= 8 && x <= 12 && y === 7) &&
-                        !(y >= 8 && y <= 12 && x === 7)) {
-                        if ((x > 7 || y > 7) && (x < 13 || y < 13)) {
-                            p[y][x] = rnd();
-                        } else if (x > 7 && y > 7) {
-                            p[y][x] = rnd();
-                        }
-                    }
-                }
-            }
-            return p;
         }
 
         // ===== 关闭海报 =====
