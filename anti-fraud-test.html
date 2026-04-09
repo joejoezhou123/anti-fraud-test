@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🛡️ 大V反诈测试 - 你能识破几个骗局？</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            background: linear-gradient(180deg, rgba(233, 69, 96, 0.15) 0%, transparent 100%);
+        }
+
+        .header-icon {
+            font-size: 60px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 8px;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4a5568;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: #ff6b6b;
+            box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
+        }
+
+        .progress-dot.completed {
+            background: #48dbfb;
+        }
+
+        /* 题目区域 */
+        .question-section {
+            padding: 0 20px;
+            display: none;
+        }
+
+        .question-section.active {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+
+        .options {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px 18px;
+            color: #e2e8f0;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            line-height: 1.5;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(72, 219, 251, 0.5);
+        }
+
+        .option-btn:active {
+            transform: scale(0.98);
+        }
+
+        .option-btn.selected {
+            border-color: #48dbfb;
+            background: rgba(72, 219, 251, 0.15);
+            box-shadow: 0 0 20px rgba(72, 219, 251, 0.2);
+        }
+
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.25s;
+        }
+
+        .option-btn.selected .option-letter {
+            background: #48dbfb;
+            color: #1a1a2e;
+        }
+
+        /* 开始页 */
+        .start-section {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .start-section.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .start-section.hidden {
+            display: none;
+        }
+
+        .start-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .start-desc {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #cbd5e0;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 16px 60px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(238, 90, 36, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(238, 90, 36, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        /* 结果页 */
+        .result-section {
+            padding: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 35px 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .result-rank {
+            font-size: 56px;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .result-title.bronze { color: #cd7f32; }
+        .result-title.silver { color: #c0c0c0; }
+        .result-title.gold { color: #ffd700; }
+        .result-title.king { 
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff6b6b);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientMove 2s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        .result-score {
+            font-size: 42px;
+            font-weight: bold;
+            color: #48dbfb;
+            margin: 16px 0;
+        }
+
+        .result-desc {
+            font-size: 15px;
+            color: #a0aec0;
+            line-height: 1.7;
+        }
+
+        /* 信息收集区域（陷阱） */
+        .info-collect {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 107, 107, 0.08));
+            border: 2px dashed rgba(255, 215, 0, 0.4);
+            border-radius: 16px;
+            padding: 24px 20px;
+            margin-top: 25px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-header span {
+            font-size: 16px;
+            font-weight: bold;
+            color: #feca57;
+        }
+
+        .info-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            min-width: 75px;
+            color: #cbd5e0;
+        }
+
+        .form-group input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.25s;
+        }
+
+        .form-group input:focus {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-confirm {
+            flex: 1;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn-confirm:hover {
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-abandon {
+            flex: 1;
+            background: transparent;
+            color: #48dbfb;
+            border: 2px solid #48dbfb;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn-abandon:hover {
+            background: rgba(72, 219, 251, 0.15);
+        }
+
+        .trap-hint {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 14px;
+        }
+
+        /* 弹窗遮罩 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-box {
+            background: linear-gradient(145deg, #1e2746, #162038);
+            border-radius: 20px;
+            padding: 32px 24px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: modalIn 0.4s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.85) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-box.danger {
+            border: 2px solid #e74c3c;
+            box-shadow: 0 0 40px rgba(231, 76, 60, 0.3);
+        }
+
+        .modal-box.success {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 40px rgba(46, 204, 113, 0.3);
+        }
+
+        .modal-icon {
+            font-size: 52px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title.danger-title { color: #e74c3c; }
+        .modal-title.success-title { color: #2ecc71; }
+
+        .modal-body {
+            font-size: 15px;
+            line-height: 1.85;
+            color: #cbd5e0;
+            text-align: justify;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: none;
+        }
+
+        .btn-retest {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: #fff;
+        }
+
+        .btn-poster {
+            background: linear-gradient(135deg, #00b894, #55efc4);
+            color: #1a1a2e;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 海报弹窗 */
+        .poster-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .poster-overlay.show {
+            display: flex;
+        }
+
+        .poster-container {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .poster-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .poster-subtitle {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-bottom: 20px;
+        }
+
+        .poster-result {
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .poster-level {
+            font-size: 18px;
+            color: #48dbfb;
+            margin-bottom: 20px;
+        }
+
+        .poster-trap-result {
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .poster-trap-result.failed {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            color: #ff6b6b;
+        }
+
+        .poster-trap-result.passed {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.4);
+            color: #2ecc71;
+        }
+
+        .poster-qrcode-area {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .poster-qrcode-hint {
+            font-size: 13px;
+            color: #a0aec0;
+        }
+
+        .poster-footer-logo {
+            font-size: 13px;
+            color: #666;
+            margin-top: 16px;
+        }
+
+        .close-poster-btn {
+            background: transparent;
+            color: #888;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px 30px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .close-poster-btn:hover {
+            color: #ccc;
+            border-color: #666;
+        }
+
+        /* 底部提示 */
+        .footer-tip {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 380px) {
+            .header h1 { font-size: 22px; }
+            .question-text { font-size: 15px; }
+            .option-btn { padding: 13px 14px; font-size: 14px; }
+            .result-score { font-size: 34px; }
+            .result-title { font-size: 24px; }
+            .modal-box { padding: 24px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 开始页面 -->
+        <div class="start-section active" id="startSection">
+            <div class="header">
+                <div class="header-icon">🛡️</div>
+                <h1>大V反诈测试</h1>
+                <p>你能识破几个骗局？</p>
+            </div>
+
+            <div class="start-desc">
+                <p style="margin-bottom: 12px;">⚠️ 电信诈骗层出不穷</p>
+                <p style="margin-bottom: 12px;">🎯 你的反诈意识能得几分？</p>
+                <p>🔥 5道真实场景测试题 + 1个隐藏陷阱</p>
+                <br>
+                <p style="color:#ff6b6b;font-weight:bold;">看看你是青铜还是王者！</p>
+            </div>
+
+            <button class="btn-primary" onclick="startTest()">开始测试 🚀</button>
+
+            <div class="footer-tip">
+                本测试由「大V反诈」出品 · 全程不收集任何信息
+            </div>
+        </div>
+
+        <!-- 题目区域 -->
+        <div class="header" id="quizHeader" style="display:none;">
+            <div class="header-icon">🧐</div>
+            <h1 id="quizTitle">反诈测试中...</h1>
+            <p id="quizSubtitle">请选择最符合的答案</p>
+        </div>
+
+        <div class="progress-bar" id="progressBar" style="display:none;"></div>
+
+        <!-- 题目会动态生成 -->
+        <div id="questionContainer"></div>
+
+        <!-- 结果页面 -->
+        <div class="result-section" id="resultSection">
+            <div class="result-card">
+                <div class="result-rank" id="resultRank">🏆</div>
+                <div class="result-title" id="resultTitle">反诈黄金水平</div>
+                <div><span id="resultScoreText">答对 4 题</span></div>
+                <div class="result-score"><span id="scoreNum">4</span>/5</div>
+                <div class="result-desc" id="resultDesc"></div>
+            </div>
+
+            <!-- 信息收集陷阱区 -->
+            <div class="info-collect">
+                <div class="info-header">
+                    <span>🎁 领取你的反诈专属证书</span>
+                </div>
+                <div class="info-form">
+                    <div class="form-group">
+                        <label>姓名：</label>
+                        <input type="text" id="inputName" placeholder="请输入真实姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>电话：</label>
+                        <input type="tel" id="inputPhone" placeholder="请输入手机号码">
+                    </div>
+                    <div class="form-group">
+                        <label>身份证：</label>
+                        <input type="text" id="inputIdCard" placeholder="请输入身份证号">
+                    </div>
+                    <div class="form-buttons">
+                        <button class="btn-confirm" onclick="submitInfo(true)">【确认】</button>
+                        <button class="btn-abandon" onclick="submitInfo(false)">【放弃】</button>
+                    </div>
+                </div>
+                <div class="trap-hint">💡 请仔细考虑后再操作...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 结果判定弹窗 -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-icon" id="modalIcon"></div>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-retest" onclick="retest()">重新测试</button>
+                <button class="modal-btn btn-poster" onclick="showPoster()">分享海报</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 海报弹窗 -->
+    <div class="poster-overlay" id="posterOverlay">
+        <div class="poster-container">
+            <div class="poster-title">🛡️ 大V反诈测试</div>
+            <div class="poster-subtitle">我的反诈能力等级</div>
+            <div class="poster-result" id="posterScoreResult">4/5</div>
+            <div class="poster-level" id="posterLevelResult">反诈黄金水平</div>
+            <div class="poster-trap-result" id="posterTrapResult">
+                隐私陷阱：✅ 成功识破
+            </div>
+            <div class="poster-qrcode-area">
+                <canvas id="qrCanvas" width="200" height="200"></canvas>
+            </div>
+            <div class="poster-qrcode-hint">长按保存图片，分享给好友一起测</div>
+            <div class="poster-footer-logo">—— 大V反诈 ——</div>
+            <button class="close-poster-btn" onclick="closePoster()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== 题库数据 =====
+        const questions = [
+            {
+                question: "你接到自称\"电商客服\"电话，说你购买的商品质量有问题，要给你双倍退款，让你提供银行卡号和短信验证码。这最可能是？",
+                options: ["正常售后退款", "冒充客服诈骗", "银行系统维护"],
+                answer: 1
+            },
+            {
+                question: "网友带你在一个陌生平台\"投资理财\"，刚开始小额能提现，后来让你不断充值，说充越多赚越多，这属于？",
+                options: ["正规理财投资", "网络博彩", "杀猪盘 / 网络投资诈骗"],
+                answer: 2
+            },
+            {
+                question: "收到短信：\"您的社保卡异常 / 涉嫌违规，点击链接完善信息，否则将停用。\" 这是？",
+                options: ["社保部门官方提醒", "钓鱼链接诈骗", "手机运营商通知"],
+                answer: 1
+            },
+            {
+                question: "有人加你微信，拉你进刷单群，说\"点赞、刷销量就能日入几百，先交保证金\"。这是？",
+                options: ["靠谱兼职", "刷单返利诈骗", "电商推广活动"],
+                answer: 1
+            },
+            {
+                question: "接到\"公安局\"电话，说你涉嫌洗钱、涉毒犯罪，要求你把钱转到\"安全账户\"自证清白。这是？",
+                options: ["警方正常办案", "冒充公检法诈骗", "银行风控核查"],
+                answer: 1
+            }
+        ];
+
+        const rankInfo = {
+            0: { rank: "🥉", title: "反诈青铜水平", class: "bronze", desc: "危险！你极易成为骗子的目标。建议立即学习反诈知识，下载国家反诈中心APP，提高警惕！" },
+            1: { rank: "🥉", title: "反诈白银水平", class: "silver", desc: "及格边缘！你对部分骗局有识别能力，但仍需加强学习，骗子手段在不断升级哦~" },
+            2: { rank: "🥈", title: "反诈白银水平", class: "silver", desc: "还不错！你已经能识别大部分常见骗局了，但别大意，新型诈骗防不胜防。" },
+            3: { rank: "🥇", title: "反诈黄金水平", class: "gold", desc: "优秀！你的反诈意识已经超越大多数人了！继续保持警惕，守护好自己的钱包~" },
+            4: { rank: "🥇", title: "反诈黄金水平", class: "gold", desc: "非常棒！你几乎能识破所有常见骗局！离王者只差一步啦！" },
+            5: { rank: "👑", title: "反诈王者水平！", class: "king", desc: "满级大神！你的反诈意识拉满，骗子见了都要绕道走！请把这份智慧传递给更多人！" }
+        };
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+        let trapPassed = false;
+
+        // ===== 初始化进度点 =====
+        function initProgress() {
+            const bar = document.getElementById('progressBar');
+            bar.innerHTML = '';
+            for (let i = 0; i < questions.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
+                dot.id = `dot${i}`;
+                bar.appendChild(dot);
+            }
+        }
+
+        // ===== 渲染题目 =====
+        function renderQuestion() {
+            const container = document.getElementById('questionContainer');
+            const q = questions[currentQuestion];
+            
+            const letters = ['A', 'B', 'C'];
+            let optionsHtml = q.options.map((opt, idx) => `
+                <button class="option-btn" data-idx="${idx}" onclick="selectOption(${idx})">
+                    <span class="option-letter">${letters[idx]}</span>
+                    <span>${opt}</span>
+                </button>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="question-section active" id="qSection${currentQuestion}">
+                    <div class="question-card">
+                        <span class="question-number">第 ${currentQuestion + 1} / ${questions.length} 题</span>
+                        <div class="question-text">${q.question}</div>
+                        <div class="options">${optionsHtml}</div>
+                    </div>
+                </div>
+            `;
+
+            // 更新进度点
+            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+                dot.classList.remove('active');
+                if (i < currentQuestion) dot.classList.add('completed');
+                if (i === currentQuestion) dot.classList.add('active');
+            });
+        }
+
+        // ===== 选择答案 =====
+        function selectOption(idx) {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.classList.remove('selected'));
+            buttons[idx].classList.add('selected');
+
+            userAnswers[currentQuestion] = idx;
+
+            // 延迟后进入下一题
+            setTimeout(() => {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    renderQuestion();
+                } else {
+                    showResult();
+                }
+            }, 450);
+        }
+
+        // ===== 显示结果 =====
+        function showResult() {
+            // 计算得分
+            score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].answer) score++;
+            }
+
+            const info = rankInfo[score];
+
+            document.getElementById('quizHeader').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('questionContainer').innerHTML = '';
+            document.getElementById('resultSection').classList.add('active');
+
+            document.getElementById('resultRank').textContent = info.rank;
+            document.getElementById('resultTitle').textContent = info.title;
+            document.getElementById('resultTitle').className = 'result-title ' + info.class;
+            document.getElementById('resultScoreText').textContent = `答对 ${score} 题`;
+            document.getElementById('scoreNum').textContent = score;
+            document.getElementById('resultDesc').textContent = info.desc;
+        }
+
+        // ===== 提交信息（陷阱核心逻辑）=====
+        function submitInfo(confirmed) {
+            trapPassed = !confirmed;  // 点击放弃=识破陷阱
+
+            const modal = document.getElementById('resultModal');
+            const modalBox = document.getElementById('modalBox');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            if (confirmed) {
+                // 没有识破陷阱
+                modalBox.className = 'modal-box danger';
+                modalIcon.textContent = '🔴';
+                modalTitle.textContent = '【反诈紧急预警！】';
+                modalTitle.className = 'modal-title danger-title';
+                modalBody.innerHTML = `<strong>警惕！</strong>身份证号、手机号、银行卡信息均为<strong>个人核心隐私</strong>，任何以"礼品领取""信息核验""福利兑换"为由索要此类信息的行为，均为<strong>诈骗分子套取隐私的惯用手段</strong>！<br><br>本次问卷中的"信息填写"环节，正是一场<strong>真实反诈测试</strong>。你未能识破该陷阱，请务必牢记：<strong>绝不向陌生平台、陌生账号泄露身份证、手机号、银行卡及验证码等关键信息</strong>，守护隐私安全，就是守护财产安全！`;
+            } else {
+                // 成功识破陷阱
+                modalBox.className = 'modal-box success';
+                modalIcon.textContent = '🟢';
+                modalTitle.textContent = '【恭喜你！反诈意识拉满！】';
+                modalTitle.className = 'modal-title success-title';
+                modalBody.innerHTML = `你成功识破本次反诈测试中的<strong>隐私套取陷阱</strong>！反诈判断力满分！💯<br><br>记住这个原则：<strong>任何以奖品、福利、认证为由索要个人敏感信息的请求，都要保持高度警惕</strong>。真正的反诈宣传绝不会要求填写这些内容。`;
+            }
+
+            modal.classList.add('show');
+        }
+
+        // ===== 重新测试 =====
+        function retest() {
+            document.getElementById('resultModal').classList.remove('show');
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            trapPassed = false;
+
+            document.getElementById('resultSection').classList.remove('active');
+            document.getElementById('startSection').classList.add('active');
+            document.getElementById('quizHeader').style.display = '';
+        }
+
+        // ===== 显示海报 =====
+        function showPoster() {
+            document.getElementById('resultModal').classList.remove('show');
+
+            const info = rankInfo[score];
+            document.getElementById('posterScoreResult').textContent = `${score}/5`;
+            document.getElementById('posterLevelResult').textContent = info.title;
+
+            const trapEl = document.getElementById('posterTrapResult');
+            if (trapPassed) {
+                trapEl.className = 'poster-trap-result passed';
+                trapEl.innerHTML = '🟢 隐私陷阱：成功识破 ✓<br>反诈判断力满分！';
+            } else {
+                trapEl.className = 'poster-trap-result failed';
+                trapEl.innerHTML = '🔴 隐私陷阱：未识破 ✗<br>需加强个人信息保护意识';
+            }
+
+            // 绘制二维码（模拟）
+            drawQRCode();
+
+            document.getElementById('posterOverlay').classList.add('show');
+        }
+
+        // ===== 简易二维码绘制 =====
+        function drawQRCode() {
+            const canvas = document.getElementById('qrCanvas');
+            const ctx = canvas.getContext('2d');
+            const size = 200;
+            const cellSize = 8;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, size, size);
+
+            ctx.fillStyle = '#000000';
+
+            // 使用简单图案模拟二维码外观
+            const pattern = generateQRPattern();
+            for (let y = 0; y < 21; y++) {
+                for (let x = 0; x < 21; x++) {
+                    if (pattern[y][x]) {
+                        ctx.fillRect(4 + x * cellSize, 4 + y * cellSize, cellSize - 1, cellSize - 1);
+                    }
+                }
+            }
+
+            // 中心文字
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('扫我', size/2, size/2 + 7);
+        }
+
+        function generateQRPattern() {
+            // 生成一个类似二维码的伪随机图案
+            const p = Array(21).fill(null).map(() => Array(21).fill(false));
+
+            // 左上角定位图案
+            const drawFinder = (ox, oy) => {
+                for(let y=-1;y<=7;y++) for(let x=-1;x<=7;x++) {
+                    const inOuter = x>=0&&x<=7&&y>=0&&y<=7;
+                    const inInner = x>=1&&x<=5&&y>=1&&y<=5;
+                    const inCore = x>=2&&x<=4&&y>=2&&y<=4;
+                    if(inOuter && !inInner) p[oy+y][ox+x] = true;
+                    else if(inInner && !inCore) p[oy+y][ox+x] = true;
+                }
+            };
+
+            drawFinder(0, 0);
+            drawFinder(13, 0);
+            drawFinder(0, 13);
+
+            // 添加数据区域的伪随机填充
+            let seed = 42;
+            const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed % 3 === 0; };
+            for (let y = 0; y < 21; y++) {
+                for (let x = 0; x < 21; x++) {
+                    if (!p[y][x] && !(x >= 8 && x <= 12 && y === 7) &&
+                        !(y >= 8 && y <= 12 && x === 7)) {
+                        if ((x > 7 || y > 7) && (x < 13 || y < 13)) {
+                            p[y][x] = rnd();
+                        } else if (x > 7 && y > 7) {
+                            p[y][x] = rnd();
+                        }
+                    }
+                }
+            }
+            return p;
+        }
+
+        // ===== 关闭海报 =====
+        function closePoster() {
+            document.getElementById('posterOverlay').classList.remove('show');
+        }
+
+        // ===== 开始测试 =====
+        function startTest() {
+            document.getElementById('startSection').classList.remove('active');
+            document.getElementById('startSection').classList.add('hidden');
+            document.getElementById('quizHeader').style.display = '';
+            document.getElementById('progressBar').style.display = 'flex';
+            
+            initProgress();
+            renderQuestion();
+        }
+    </script>
+</body>
+</html>
